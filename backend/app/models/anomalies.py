@@ -17,3 +17,4 @@ class Anomaly(Base):
     reason: Mapped[str] = mapped_column(String(500), nullable=False)
 
     resource = relationship("Resource", back_populates="anomalies")
+    insights = relationship("DiagnosticInsight", back_populates="anomaly", cascade="all, delete-orphan")

@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Building, Cloud, Globe, ArrowRight, ArrowLeft, Check, Zap, Shield } from 'lucide-react';
 import { FloatingInput, GradientButton, StepIndicator, TrustBadge } from '../../components/auth/AuthUI';
 
-export const SignupPage: React.FC = () => {
+interface SignupPageProps {
+  onNavigate: (page: 'landing' | 'login' | 'signup' | 'dashboard') => void;
+}
+
+export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -52,7 +54,7 @@ export const SignupPage: React.FC = () => {
 
     try {
       await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      navigate('/dashboard');
+      onNavigate('dashboard');
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Failed to create account');
@@ -260,7 +262,7 @@ export const SignupPage: React.FC = () => {
             <TrustBadge />
 
             <p className="mt-10 text-center text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-              Already registered? <Link to="/login" className="text-white hover:text-indigo-400 transition-colors">Connect Identity</Link>
+              Already registered? <button onClick={() => onNavigate('login')} className="text-white hover:text-indigo-400 transition-colors cursor-pointer">Connect Identity</button>
             </p>
           </div>
         </div>

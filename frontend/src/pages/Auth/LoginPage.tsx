@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, Chrome, LogIn } from 'lucide-react';
 import { FloatingInput, GradientButton, TrustBadge } from '../../components/auth/AuthUI';
 
-export const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  onNavigate: (page: 'landing' | 'login' | 'signup' | 'dashboard') => void;
+}
+
+export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ export const LoginPage: React.FC = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      onNavigate('dashboard');
     } catch (err: any) {
       console.error(err);
       setError('Invalid identity credentials. Access denied.');
@@ -33,7 +35,7 @@ export const LoginPage: React.FC = () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      navigate('/dashboard');
+      onNavigate('dashboard');
     } catch (err) {
       console.error(err);
     }
@@ -163,7 +165,7 @@ export const LoginPage: React.FC = () => {
             <TrustBadge />
 
             <p className="mt-10 text-center text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-              New operative? <Link to="/signup" className="text-white hover:text-indigo-400 transition-colors">Initialize account</Link>
+              New operative? <button onClick={() => onNavigate('signup')} className="text-white hover:text-indigo-400 transition-colors cursor-pointer">Initialize account</button>
             </p>
           </div>
         </div>

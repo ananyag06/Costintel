@@ -11,7 +11,7 @@ from app.db.base import Base
 from app.db.bootstrap import bootstrap_database
 from app.db.repositories.resource_repository import ResourceRepository
 from app.db.session import SessionLocal, engine
-from app.models import actions, anomalies, cost, metrics, resource  # noqa: F401
+from app.models import actions, anomalies, cost, metrics, resource, insights  # noqa: F401
 from app.services.collector import CloudMetricCollector
 from app.services.orchestrator import MetricOrchestrator
 

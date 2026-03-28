@@ -60,6 +60,12 @@ class Settings(BaseSettings):
         "rolling_cpu", "rolling_req", "rolling_cost",
         "cost_per_req", "cpu_per_req", "mem_per_req", "storage_growth", "cost_growth"
     ])
+    
+    # xAI/Grok Integration
+    xai_api_key: str = ""
+    grok_model: str = "grok-2-latest"
+    insights_cache_ttl: int = 3600  # 1 hour cache for generated insights
+    enable_insights_generation: bool = True
 
 
 @lru_cache
