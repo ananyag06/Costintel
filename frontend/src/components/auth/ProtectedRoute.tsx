@@ -1,13 +1,13 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  onNavigate?: (page: 'landing' | 'login' | 'signup' | 'dashboard') => void;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, onNavigate }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -20,7 +20,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    if (onNavigate) onNavigate('login');
+    return null;
   }
 
   return <>{children}</>;
