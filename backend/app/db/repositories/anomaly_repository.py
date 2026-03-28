@@ -16,6 +16,10 @@ class AnomalyRepository:
         self.db.refresh(anomaly)
         return anomaly
 
+    def get_by_id(self, anomaly_id: int) -> Anomaly | None:
+        stmt = select(Anomaly).where(Anomaly.id == anomaly_id)
+        return self.db.scalar(stmt)
+
     def list(self, limit: int = 100) -> list[Anomaly]:
         stmt = select(Anomaly).order_by(desc(Anomaly.timestamp)).limit(limit)
         return list(self.db.scalars(stmt))

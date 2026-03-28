@@ -46,6 +46,20 @@ export interface ActionResponse {
   timestamp: string;
 }
 
+export interface DiagnosticInsight {
+  id: number;
+  anomaly_id: number;
+  resource_id: number;
+  title: string;
+  explanation: string;
+  recommendation: string;
+  impact: string;
+  is_applied: boolean;
+  generated_by: string;
+  generated_at: string;
+  applied_at: string | null;
+}
+
 export const getCostSummary = async (): Promise<CostSummaryResponse> => {
   const { data } = await api.get('/cost');
   return data;
@@ -92,4 +106,34 @@ export const getActions = async (): Promise<ActionResponse[]> => {
 
 export const triggerAnomalyDetection = async () => {
     return { status: 'success', message: 'Anomaly detection cycle triggered via scheduler' };
+};
+
+// Insights API endpoints
+export const getInsights = async (skip: number = 0, limit: number = 100): Promise<DiagnosticInsight[]> => {
+  const { data } = await api.get(`/insights?skip=${skip}&limit=${limit}`);
+  return data;
+};
+
+export const getUnappliedInsights = async (limit: number = 50): Promise<DiagnosticInsight[]> => {
+  const { data } = await api.get(`/insights/unapplied?limit=${limit}`);
+  return data;
+};
+
+export const getInsightsByResource = async (resourceId: number, limit: number = 50): Promise<DiagnosticInsight[]> => {
+  const { data } = await api.get(`/insights/by-resource/${resourceId}?limit=${limit}`);
+  return data;
+};
+
+export const generateInsightForAnomaly = async (anomalyId: number): Promise<DiagnosticInsight> => {
+  const { data } = await api.post(`/insights/generate/${anomalyId}`);
+  return data;
+};
+
+export const markInsightAsApplied = async (insightId: number): Promise<DiagnosticInsight> => {
+  const { data } = await api.patch(`/insights/${insightId}/apply`);
+  return data;
+};
+
+export const deleteInsight = async (insightId: number): Promise<void> => {
+  await api.delete(`/insights/${insightId}`);
 };

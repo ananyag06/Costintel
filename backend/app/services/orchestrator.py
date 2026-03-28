@@ -8,6 +8,7 @@ from app.db.repositories import (
     ActionRepository,
     AnomalyRepository,
     CostRecordRepository,
+    InsightsRepository,
     MetricRepository,
     ResourceRepository,
 )
@@ -22,6 +23,7 @@ from app.services.collector import CloudMetricCollector
 from app.services.cost_engine import CostEngine
 from app.services.decision_engine import DecisionEngine
 from app.services.optimizer import Optimizer
+from app.services.insights_generator import InsightsGenerator
 
 settings = get_settings()
 
@@ -36,11 +38,13 @@ class MetricOrchestrator:
         self.cost_repo = CostRecordRepository(db)
         self.anomaly_repo = AnomalyRepository(db)
         self.action_repo = ActionRepository(db)
+        self.insights_repo = InsightsRepository(db)
         self.cost_engine = CostEngine()
         self.collector = collector or CloudMetricCollector()
         self.anomaly_detector = AnomalyDetector(self.metric_repo, self.cost_repo)
         self.decision_engine = DecisionEngine()
         self.optimizer = Optimizer(self.action_repo)
+        self.insights_generator = InsightsGenerator()
 
     def ingest_metric(
         self,
@@ -98,7 +102,7 @@ class MetricOrchestrator:
         action_status = None
 
         if anomaly_result.is_anomaly:
-            self.anomaly_repo.create(
+            anomaly = self.anomaly_repo.create(
                 Anomaly(
                     resource_id=payload.resource_id,
                     timestamp=payload.timestamp,
@@ -112,6 +116,14 @@ class MetricOrchestrator:
                 anomaly_result.score,
                 anomaly_result.reason,
             )
+            
+            # Generate diagnostic insight for this anomaly
+            try:
+                insight = self.insights_generator.generate_insight(anomaly, resource)
+                self.insights_repo.create(insight)
+                logger.info(f"Generated insight for anomaly {anomaly.id}: {insight.title}")
+            except Exception as e:
+                logger.error(f"Failed to generate insight for anomaly {anomaly.id}: {e}")
 
         decision = self.decision_engine.evaluate(resource, payload, estimated_cost, anomaly_result)
         if decision.should_act and decision.action_type and settings.auto_apply_optimizations:
