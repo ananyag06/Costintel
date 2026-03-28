@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { OverviewPanel } from './components/dashboard/OverviewPanel';
 import { AnomalyPanel } from './components/dashboard/AnomalyPanel';
@@ -12,6 +10,8 @@ import { SettingsPanel } from './components/dashboard/SettingsPanel';
 import { LandingPage } from './components/landing/LandingPage';
 import { LoginPage } from './pages/Auth/LoginPage';
 import { SignupPage } from './pages/Auth/SignupPage';
+
+type PageType = 'landing' | 'login' | 'signup' | 'dashboard';
 
 function DashboardRoutes() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -35,8 +35,7 @@ function DashboardRoutes() {
   );
 }
 
-function AppContent() {
-  const navigate = useNavigate();
+function AppContent({ currentPage, setCurrentPage }: { currentPage: PageType; setCurrentPage: (page: PageType) => void }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -47,43 +46,27 @@ function AppContent() {
     );
   }
 
-  return (
-    <Routes>
-      {/* Root Path - Always show Landing Page as requested */}
-      <Route 
-        path="/" 
-        element={<LandingPage onGetStarted={() => user ? navigate('/dashboard') : navigate('/login')} />} 
-      />
+  // Route based on authentication and current page
+  if (!user) {
+    if (currentPage === 'login') {
+      return <LoginPage onNavigate={setCurrentPage} />;
+    }
+    if (currentPage === 'signup') {
+      return <SignupPage onNavigate={setCurrentPage} />;
+    }
+    return <LandingPage onNavigate={setCurrentPage} />;
+  }
 
-      {/* Legacy /landing route for compatibility */}
-      <Route path="/landing" element={<Navigate to="/" replace />} />
-
-      {/* Public Auth Routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-
-      {/* Protected Dashboard Routes */}
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <DashboardRoutes />
-          </ProtectedRoute>
-        } 
-      />
-
-      {/* Catch-all */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+  // User is authenticated, show dashboard
+  return <DashboardRoutes />;
 }
 
 function App() {
+  const [currentPage, setCurrentPage] = useState<PageType>('landing');
+
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <AppContent currentPage={currentPage} setCurrentPage={setCurrentPage} />
     </AuthProvider>
   );
 }

@@ -289,7 +289,7 @@ const MorphSimulation = () => {
       </div>
    );
 };
-export function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
+export function LandingPage({ onNavigate }: { onNavigate: (page: 'landing' | 'login' | 'signup' | 'dashboard') => void }) {
   return (
     <div className="min-h-screen text-zinc-400 font-sans selection:bg-indigo-500/30 overflow-x-hidden relative"
          style={{ 
@@ -332,7 +332,7 @@ export function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
                      <a href="#" className="text-zinc-400 hover:text-white transition-colors">Anomaly Detection</a>
                      <a href="#" className="text-zinc-400 hover:text-white transition-colors">Docs</a>
                   </div>
-                  <button onClick={onGetStarted} className="px-8 py-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-all hover:scale-105 active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.1)]">
+                  <button onClick={() => onNavigate('signup')} className="px-8 py-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-all hover:scale-105 active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.1)]">
                      Launch App
                   </button>
                </div>
@@ -365,7 +365,7 @@ export function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
                         </p>
                         
                         <div className="flex flex-col sm:flex-row items-center gap-6">
-                           <button onClick={onGetStarted} className="w-full sm:w-auto px-12 py-5 bg-white text-black rounded-2xl text-[15px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-[0_20px_50px_rgba(255,255,255,0.15)] active:scale-95 flex items-center justify-center gap-3">
+                           <button onClick={() => onNavigate('signup')} className="w-full sm:w-auto px-12 py-5 bg-white text-black rounded-2xl text-[15px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-[0_20px_50px_rgba(255,255,255,0.15)] active:scale-95 flex items-center justify-center gap-3">
                               Get Started <ArrowRight className="w-5 h-5" />
                            </button>
                            <button className="w-full sm:w-auto px-12 py-5 bg-white/[0.03] border border-white/10 text-white rounded-2xl text-[15px] font-black uppercase tracking-[0.2em] hover:bg-white/[0.08] transition-all flex items-center justify-center gap-3">
@@ -636,7 +636,7 @@ export function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
                   <span className="text-zinc-500">Start controlling it.</span>
                </h2>
                <div className="flex justify-center">
-                  <button onClick={onGetStarted} className="px-10 py-5 bg-white text-black rounded-2xl text-[15px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] flex items-center gap-3">
+                  <button onClick={() => onNavigate('signup')} className="px-10 py-5 bg-white text-black rounded-2xl text-[15px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] flex items-center gap-3">
                      Activate CostIntel <ArrowRight className="w-5 h-5" />
                   </button>
                </div>
